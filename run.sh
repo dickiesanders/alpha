@@ -10,10 +10,13 @@ helm repo update
 echo "helm install $pod_name jenkins/jenkins -f values.yaml --namespace jenkins"
 
 # create Jenkins job to create the cluster
-   config.xml
-# Jenkins configuration file, that can be included in the filesystem of the container
+### get current config
+curl -X GET http://developer:developer@localhost:8080/job/test/config.xml -o mylocalconfig.xml
 
-### https://support.cloudbees.com/hc/en-us/articles/218353308-How-to-update-job-config-files-using-the-REST-API-and-cURL-
+### update and return to jenkins
+curl -X POST http://developer:developer@localhost:8080/job/test/config.xml --data-binary "@mymodifiedlocalconfig.xml"
+
+# Jenkins configuration file, that can be included in the filesystem of the container
 
 # update Application Infra Repo
 
