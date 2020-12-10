@@ -1,0 +1,3 @@
+controller:
+  servicePort: 80
+  serviceType: LoadBalancer
