@@ -1,0 +1,6 @@
+controller:
+  javaOpts: "-Xms4000m -Xmx4000m"
+  servicePort: 80
+  serviceType: LoadBalancer
+  image: 997154480092.dkr.ecr.us-east-2.amazonaws.com/jenkinshelm
+  tag: latest

@@ -1,40 +1,71 @@
 #!/bin/bash
 
+###############################################################################
 # create new Application Jenkins Controller
-pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
-aws eks --region us-east-2 update-kubeconfig --name first
-chmod 700 ~/.kube/config
-helm repo add jenkins https://charts.jenkins.io
-helm repo update
+if [ $1 ]; then
+  # kubectl delete pod jankins
+  helm uninstall jankins
+else
+  # Prep the environment, including getting name of new account
+  pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
+  pod_name=NewAccountJenkins
+  aws eks --region us-east-2 update-kubeconfig --name alpha-cluster
+  chmod 700 ~/.kube/config
+  helm repo add jenkins https://charts.jenkins.io
+  helm repo update
 
-echo "helm install $pod_name jenkins/jenkins -f values.yaml --namespace jenkins"
+  # helm repo add jenkins https://charts.jenkins.io
+  helm install $pod_name jenkins/jenkins -f jenkins-chart-values.yaml --namespace jenkins
+  echo "Waiting for Jenkins to settle in"
+  sleep 300
 
-# create Jenkins job to create the cluster
-### get current config
-curl -X GET http://developer:developer@localhost:8080/job/test/config.xml -o mylocalconfig.xml
+  ###############################################################################
+  # get new jenkins pod information
+  export SERVICE_IP=$(kubectl get svc --namespace jenkins $pod_name-jenkins \
+    --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}"); echo http://$SERVICE_IP/login
+    
+  export SERVICE_SECRET=$(kubectl exec --namespace jenkins -it svc/$pod_name-jenkins -c jenkins -- /bin/cat /run/secrets/chart-admin-password)
+  echo $SERVICE_SECRET; echo
 
-### update and return to jenkins
-curl -X POST http://developer:developer@localhost:8080/job/test/config.xml --data-binary "@mymodifiedlocalconfig.xml"
+  ###############################################################################
+  # create Jenkins job to create the new application K8s cluster
+  # Replace the following variables
+  SERVER=$SERVICE_IP:80
+  USER=admin
+  PW=$SERVICE_SECRET
+  CONFIG_FILE=new-jenkins-job-config.xml
+  JOB_NAME=$pod_name-infrastructure
 
-# Jenkins configuration file, that can be included in the filesystem of the container
+  # File where web session cookie is saved, retrieve crumb, and create the new jenkins job
+  COOKIEJAR="$(mktemp)"
+  CRUMB=$(curl -u "$USER:$PW" --cookie-jar "$COOKIEJAR" "$SERVER/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,%22:%22,//crumb)")
 
-# update Application Infra Repo
+  # install new job
+  curl -X POST -u "$USER:$PW" --cookie "$COOKIEJAR" -H "$CRUMB" "$SERVER"/createItem?name=$JOB_NAME --data-binary @$CONFIG_FILE -H "Content-Type:application/xml"
 
-### replace app_infra_repo with value in Parameter Store
-app_infra_repo='git@github.com:mi5guided/beta.git'
+  # Check that the project was created - should return exists
+  curl -X GET -u "$USER:$PW" --cookie "$COOKIEJAR" -H "$CRUMB" "$SERVER"/checkJobName?value="$JOB_NAME"
 
-git clone $app_infra_repo
 
-cd `echo $app_infra_repo | cut -d '/' -f 2 | cut -d '.' -f 1`
-### or, if parsing the git repo url string too hard, use below
-# cd `ls -t -1 | head -n 1`
+  ###############################################################################
+  # update repo, to trigger build of K8s cluster. This may have to be manual..
+  ### replace app_infra_repo with value in Parameter Store
 
-### set identity of 
-cat << 'NEWPARAM' >> .git/config
-[user]
-  email = accounthandoff@example.com
-  name = accthandoff automation
-NEWPARAM
+  # app_infra_repo='git@github.com:mi5guided/beta.git'
+  # git clone $app_infra_repo
 
-git commit --allow-empty -m "Trigger Build `date`"
-git push
+  # cd `echo $app_infra_repo | cut -d '/' -f 2 | cut -d '.' -f 1`
+  ### or, if parsing the git repo url string too hard, use below
+  # cd `ls -t -1 | head -n 1`
+
+  ### set identity of 
+  # cat << 'NEWPARAM' >> .git/config
+  # [user]
+  #   email = accounthandoff@example.com
+  #   name = accthandoff automation
+  # NEWPARAM
+
+  # git commit --allow-empty -m "Trigger Build `date`"
+  # git push
+  ###############################################################################
+fi

@@ -8,5 +8,5 @@
 - Jenkinsfile - the Jenkins job definition
 - ParameterPath.csv - newly inflated accounts will be added to this file, then checked in
 - run.sh - shell script to create new Application Jenkins Controller
-- value.yaml - Helm values to use, when launching the new Application Jenkins Controller
+- new-jenkins-chart-values.yaml - Helm values to use, when launching the new Application Jenkins Controller
 - **MISSING** - the xml file defining the Jenkins Job in the new Application Jenkins Controller that will create the K8s cluster
