@@ -16,7 +16,7 @@ PW=$SERVICE_SECRET
 
 # other static variables
 CONFIG_FILE=jenkins-pipeline-config.xml
-JOB_NAME=newly_inflated_account_transit_point
+JOB_NAME=new_account_transit_point
 
 # File where web session cookie is saved, retrieve crumb, and create the new jenkins job
 COOKIEJAR="$(mktemp)"

@@ -40,6 +40,10 @@ else
   COOKIEJAR="$(mktemp)"
   CRUMB=$(curl -u "$USER:$PW" --cookie-jar "$COOKIEJAR" "$SERVER/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,%22:%22,//crumb)")
 
+  # install plug-ins we need
+  curl -X POST -u "$USER:$PW" --cookie "$COOKIEJAR" -H "$CRUMB" -d '<jenkins><install plugin="github@1.32.0" /></jenkins>' --header 'Content-Type: text/xml' "$SERVER/pluginManager/installNecessaryPlugins"
+  curl -X POST -u "$USER:$PW" --cookie "$COOKIEJAR" -H "$CRUMB" -d '<jenkins><install plugin="bitbucket@1.1.27" /></jenkins>' --header 'Content-Type: text/xml' "$SERVER/pluginManager/installNecessaryPlugins"
+
   # install new job
   curl -X POST -u "$USER:$PW" --cookie "$COOKIEJAR" -H "$CRUMB" "$SERVER"/createItem?name=$JOB_NAME --data-binary @$CONFIG_FILE -H "Content-Type:application/xml"
 
