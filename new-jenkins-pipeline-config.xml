@@ -3,13 +3,18 @@
   <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.32.0">
+      <projectUrl>git@github.com:mi5guided/beta.git/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@4.4.5">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
         <url>git@github.com:mi5guided/beta.git</url>
-        <credentialsId>mi5guided</credentialsId>
+        <credentialsId>github</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -31,7 +36,12 @@
     </com.cloudbees.jenkins.GitHubPushTrigger>
   </triggers>
   <concurrentBuild>false</concurrentBuild>
-  <builders/>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>./run.sh</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
   <publishers/>
   <buildWrappers/>
 </project>

@@ -8,7 +8,7 @@ if [ $1 ]; then
 else
   # Prep the environment, including getting name of new account
   pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
-  pod_name=NewAccountJenkins
+  pod_name=newaccountjenkins
   aws eks --region us-east-2 update-kubeconfig --name alpha-cluster
   chmod 700 ~/.kube/config
   helm repo add jenkins https://charts.jenkins.io
@@ -33,7 +33,7 @@ else
   SERVER=$SERVICE_IP:80
   USER=admin
   PW=$SERVICE_SECRET
-  CONFIG_FILE=new-jenkins-job-config.xml
+  CONFIG_FILE=new-jenkins-pipeline-config.xml
   JOB_NAME=$pod_name-infrastructure
 
   # File where web session cookie is saved, retrieve crumb, and create the new jenkins job
