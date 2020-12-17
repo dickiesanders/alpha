@@ -9,10 +9,10 @@
 pipeline {
   agent any
   stages {
-    stage('Create Application Jenkins Controller') {
+    stage('Create') {
       steps {
         echo 'Create Application Jenkins Controller via Helm Chart'
-        ./run.sh
+        sh ./run.sh
       }
     }
   }
