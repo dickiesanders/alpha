@@ -11,8 +11,8 @@ pipeline {
   stages {
     stage('Create') {
       steps {
-        echo 'Create Application Jenkins Controller via Helm Chart'
-        sh ./run.sh
+        sh 'echo Create Application Jenkins Controller via Helm Chart'
+        sh './run.sh'
       }
     }
   }
