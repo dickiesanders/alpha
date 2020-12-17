@@ -15,7 +15,7 @@ else
   helm repo update
 
   # helm repo add jenkins https://charts.jenkins.io
-  helm install $pod_name jenkins/jenkins -f jenkins-chart-values.yaml --namespace jenkins
+  helm install $pod_name jenkins/jenkins -f new-jenkins-chart-values.yaml --namespace jenkins
   echo "Waiting for Jenkins to settle in"
   sleep 300
 
