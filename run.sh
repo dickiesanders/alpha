@@ -1,21 +1,22 @@
 #!/bin/bash
 
+# Prep the environment, including getting name of new account
+pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
+pod_name=newaccountjenkins
+
 ###############################################################################
 # create new Application Jenkins Controller
 if [ $1 ]; then
   # kubectl delete pod jankins
-  helm uninstall jankins
+  helm uninstall $pod_name
 else
-  # Prep the environment, including getting name of new account
-  pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
-  pod_name=newaccountjenkins
   aws eks --region us-east-2 update-kubeconfig --name alpha-cluster
   chmod 700 ~/.kube/config
   helm repo add jenkins https://charts.jenkins.io
   helm repo update
 
   # helm repo add jenkins https://charts.jenkins.io
-  helm install $pod_name jenkins/jenkins -f new-jenkins-chart-values.yaml --namespace jenkins
+  helm install $pod_name jenkins/jenkins -f new-jenkins-chart-values.yaml
   echo "Waiting for Jenkins to settle in"
   sleep 300
 
