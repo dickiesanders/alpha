@@ -3,8 +3,7 @@
 # Prep the environment, including getting name of new account
 pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
 pod_name=newaccountjenkins
-name_space=xxjenkins
-
+name_space=jenkins
 
 ###############################################################################
 # create new Application Jenkins Controller
@@ -14,6 +13,9 @@ if [ $1 ]; then
 else
   aws eks --region us-east-2 update-kubeconfig --name alpha-cluster
   chmod 700 ~/.kube/config
+  kubectl get pods -A
+  kubectl get services -A
+
   helm repo add jenkins https://charts.jenkins.io
   helm repo update
 
