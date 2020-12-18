@@ -3,6 +3,8 @@
 # Prep the environment, including getting name of new account
 pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
 pod_name=newaccountjenkins
+name_space=xxjenkins
+
 
 ###############################################################################
 # create new Application Jenkins Controller
@@ -16,16 +18,16 @@ else
   helm repo update
 
   # helm repo add jenkins https://charts.jenkins.io
-  helm install $pod_name jenkins/jenkins -f new-jenkins-chart-values.yaml
+  helm install $pod_name jenkins/jenkins -f new-jenkins-chart-values.yaml --namespace $name_space --create-namespace
   echo "Waiting for Jenkins to settle in"
   sleep 300
 
   ###############################################################################
   # get new jenkins pod information
-  export SERVICE_IP=$(kubectl get svc --namespace jenkins $pod_name-jenkins \
+  export SERVICE_IP=$(kubectl get svc --namespace $name_space $pod_name-jenkins \
     --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}"); echo http://$SERVICE_IP/login
     
-  export SERVICE_SECRET=$(kubectl exec --namespace jenkins -it svc/$pod_name-jenkins -c jenkins -- /bin/cat /run/secrets/chart-admin-password)
+  export SERVICE_SECRET=$(kubectl exec --namespace $name_space -it svc/$pod_name-jenkins -c jenkins -- /bin/cat /run/secrets/chart-admin-password)
   echo $SERVICE_SECRET; echo
 
   ###############################################################################
