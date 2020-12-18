@@ -5,5 +5,8 @@ controller:
   image: 997154480092.dkr.ecr.us-east-2.amazonaws.com/jenkinshelm
   tag: latest
   numExecutors: 1
+  resources:
+    limits:
+      cpu: 1.5
 agent:
   enabled: false
