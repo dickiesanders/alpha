@@ -11,9 +11,11 @@ if [ $1 ]; then
   # kubectl delete pod jankins
   helm uninstall $pod_name
 else
-  aws eks --region us-east-2 update-kubeconfig --name alpha-cluster
-  chmod 700 ~/.kube/config
+  kubectl cluster-info --context kind-kind
+  #aws eks --region us-east-2 update-kubeconfig --name alpha-cluster
+  #chmod 700 ~/.kube/config
 
+#  helm repo remove jenkins
   helm repo add jenkins https://charts.jenkins.io
   helm repo update
 
@@ -23,19 +25,20 @@ else
   kubectl get services -A
 
   echo "Waiting for Jenkins to settle in"
-  sleep 300
+  #sleep 300
 
   ###############################################################################
   # get new jenkins pod information
-  export SERVICE_IP=$(kubectl get svc --namespace $name_space $pod_name-jenkins \
+  export SERVICE_IP=$(kubectl get svc --namespace $name_space $pod_name \
     --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}"); echo http://$SERVICE_IP/login
     
-  export SERVICE_SECRET=$(kubectl exec --namespace $name_space -it svc/$pod_name-jenkins -c jenkins -- /bin/cat /run/secrets/chart-admin-password)
+  export SERVICE_SECRET=$(kubectl exec --namespace $name_space -it svc/$pod_name -c jenkins -- /bin/cat /run/secrets/chart-admin-password)
   echo $SERVICE_SECRET; echo
 
   ###############################################################################
   # create Jenkins job to create the new application K8s cluster
   # Replace the following variables
+  #SERVER=http://localhost:52695
   SERVER=$SERVICE_IP:80
   USER=admin
   PW=$SERVICE_SECRET

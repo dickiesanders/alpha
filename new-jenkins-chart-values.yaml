@@ -1,8 +1,8 @@
 controller:
-  javaOpts: "-Xms4000m -Xmx4000m"
+  javaOpts: "-Xms2048m -Xmx2048m"
   servicePort: 80
   serviceType: LoadBalancer
-  image: 997154480092.dkr.ecr.us-east-2.amazonaws.com/jenkinshelm
+  image: dickiesanders/jenkins
   tag: latest
   numExecutors: 1
   resources:
