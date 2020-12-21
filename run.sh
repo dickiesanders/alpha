@@ -2,8 +2,8 @@
 
 # Prep the environment, including getting name of new account
 pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
-pod_name=newaccountjenkins
-name_space=jenkins
+pod_name=jenkins2
+name_space=jenkins2
 
 ###############################################################################
 # create new Application Jenkins Controller
