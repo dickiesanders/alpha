@@ -2,8 +2,8 @@
 
 # Prep the environment, including getting name of new account
 pod_name=`tail -n 1 ParameterPath.csv | cut -d ',' -f 1`; echo $pod_name
-pod_name=jenkins2
-name_space=jenkins2
+#pod_name=jenkins-controller
+name_space=jenkins-controller
 
 ###############################################################################
 # create new Application Jenkins Controller
@@ -11,8 +11,8 @@ if [ $1 ]; then
   # kubectl delete pod jankins
   helm uninstall $pod_name
 else
-  kubectl cluster-info --context kind-kind
-  #aws eks --region us-east-2 update-kubeconfig --name alpha-cluster
+  #kubectl cluster-info --context kind-mbp
+  #aws eks --region us-west-2 update-kubeconfig --name ms-ult
   #chmod 700 ~/.kube/config
 
 #  helm repo remove jenkins
@@ -25,7 +25,7 @@ else
   kubectl get services -A
 
   echo "Waiting for Jenkins to settle in"
-  #sleep 300
+  sleep 120
 
   ###############################################################################
   # get new jenkins pod information
@@ -38,7 +38,6 @@ else
   ###############################################################################
   # create Jenkins job to create the new application K8s cluster
   # Replace the following variables
-  #SERVER=http://localhost:52695
   SERVER=$SERVICE_IP:80
   USER=admin
   PW=$SERVICE_SECRET

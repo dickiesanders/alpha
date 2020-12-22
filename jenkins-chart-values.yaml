@@ -7,6 +7,6 @@ controller:
   numExecutors: 1
   resources:
     limits:
-      cpu: 1.5
+      cpu: 2
 agent:
   enabled: false

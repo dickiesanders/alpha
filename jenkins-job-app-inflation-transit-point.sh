@@ -1,11 +1,11 @@
 #!/bin/bash
-helmname=transitpoint
-name_space=jenkins
+helmname=jenkins
+name_space=ci-cd
 
-export SERVICE_IP=$(kubectl get svc --namespace $name_space $helmname-jenkins \
+export SERVICE_IP=$(kubectl get svc --namespace $name_space $helmname \
   --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}"); echo http://$SERVICE_IP/login
   
-export SERVICE_SECRET=$(kubectl exec --namespace $name_space -it svc/$helmname-jenkins -c jenkins -- /bin/cat /run/secrets/chart-admin-password)
+export SERVICE_SECRET=$(kubectl exec --namespace $name_space -it svc/$helmname -c jenkins -- /bin/cat /run/secrets/chart-admin-password)
 echo $SERVICE_SECRET; echo
 
 ###############################################################################
